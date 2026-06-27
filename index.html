@@ -27,14 +27,14 @@
   button{width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:600;font-family:var(--sans);color:#0E1116;background:var(--fast);cursor:pointer}
   button:active{opacity:.85}
   button.ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
-  #show{font-size:18px;padding:18px;letter-spacing:.01em}
-  /* hero summary */
+  #show{font-size:18px;padding:18px}
   .summary{margin-top:14px}
   .ix{display:flex;align-items:center;justify-content:space-between;padding:14px 2px;border-bottom:1px solid var(--line)}
   .ix:last-of-type{border-bottom:none}
   .ix .nm{font-size:16px;font-weight:600}
   .ix .px{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:3px}
-  .tag{font-size:15px;font-weight:800;letter-spacing:.02em;padding:6px 14px;border-radius:99px}
+  .smas{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+  .tag{font-size:15px;font-weight:800;padding:6px 14px;border-radius:99px}
   .tag.buy{color:var(--buy);background:rgba(22,199,132,.12)}
   .tag.sell{color:var(--sell);background:rgba(240,97,109,.12)}
   .tag.err{color:var(--muted);background:var(--surface2);font-weight:600;font-size:12px}
@@ -42,14 +42,13 @@
   .change.none{color:var(--muted)} .change.flip{color:var(--text);font-weight:600}
   .change .b{color:var(--buy)} .change .s{color:var(--sell)}
   .stamp{text-align:center;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:10px}
-  .smas{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
-  /* what-if */
-  .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 14px}
-  .seg button{background:transparent;color:var(--muted);border:none;border-radius:9px;padding:10px;font-size:14px;font-weight:600;color:var(--muted)}
-  .seg button.on{background:var(--surface2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 14px}
+  .seg button{background:transparent;color:var(--muted);border:none;border-radius:9px;padding:10px;font-size:14px;font-weight:600}
+  .seg button.on{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
   label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
-  input[type=number]{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:17px;padding:13px 12px;outline:none}
-  input[type=number]:focus{border-color:var(--fast)}
+  input[type=number],input[type=text]{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:17px;padding:13px 12px;outline:none}
+  input[type=text]{font-family:var(--sans);font-size:15px}
+  input:focus{border-color:var(--fast)}
   input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
   .grid5 .cell label{text-align:center;font-family:var(--mono);font-size:10px}
@@ -61,6 +60,10 @@
   .verdict.sell{background:rgba(240,97,109,.10);border-color:rgba(240,97,109,.35)} .verdict.sell .sig{color:var(--sell)}
   .verdict.flat .sig{color:var(--neutral);font-size:22px}
   .chart{width:100%;height:120px}
+  .rows{font-family:var(--mono);font-size:13px}
+  .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}.row .k{color:var(--muted)}.row .v{font-weight:600}
+  .v.fast{color:var(--fast)}.v.slow{color:var(--slow)}
   .mt{margin-top:14px}
   .hint{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 2px 0}
   .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
@@ -84,9 +87,24 @@
   <div class="summary hidden" id="summary"></div>
 </div>
 
+<!-- OPTION / CUSTOM -->
+<div class="card">
+  <h2>Option / Custom SMA</h2>
+  <input id="cLabel" type="text" placeholder="Label (optional) — e.g. NIFTY 24500 CE">
+  <label class="mt">Last 5 closes (oldest → most recent)</label>
+  <div class="grid5" id="cGrid"></div>
+  <label class="mt">Current / today's value</label>
+  <input id="cToday" type="number" inputmode="decimal" autocomplete="off" placeholder="latest price">
+  <div id="cVerdict" class="verdict flat hidden"><p class="sig" id="cSig">—</p><p class="sub" id="cSub"></p></div>
+  <svg class="chart hidden" id="cChart" viewBox="0 0 320 120" preserveAspectRatio="none"></svg>
+  <div class="rows" id="cRows"></div>
+  <button class="ghost mt" id="cClear">Clear fields</button>
+</div>
+
+<!-- INDEX WHAT-IF -->
 <div class="card">
   <details id="whatif">
-    <summary>What-if — test a hypothetical close</summary>
+    <summary>Index what-if — test a hypothetical close</summary>
     <div class="mt"></div>
     <div class="seg" id="seg">
       <button data-k="nifty" class="on">Nifty 50</button>
@@ -98,8 +116,7 @@
     <div id="verdict" class="verdict flat hidden"><p class="sig" id="sig">—</p><p class="sub" id="sigsub"></p></div>
     <svg class="chart hidden" id="chart" viewBox="0 0 320 120" preserveAspectRatio="none"></svg>
     <details style="margin-top:12px"><summary>Edit 5 closes manually</summary>
-      <div class="mt"></div>
-      <label>Oldest → most recent</label>
+      <div class="mt"></div><label>Oldest → most recent</label>
       <div class="grid5" id="closeGrid"></div>
       <button class="ghost mt" id="saveCloses">Save closes</button>
     </details>
@@ -108,7 +125,7 @@
 
 <p class="hint">
   <span class="pill">how it reads</span>&nbsp; <b>Buy</b> = 3-SMA above 5-SMA, <b>Sell</b> = below.
-  “Flipped today” means a crossover happened on today’s data. Live price via Yahoo Finance — <b>verify against your broker before trading</b>. Data stays on your phone.
+  “Flipped today” = a crossover on today’s data. Index price via Yahoo Finance (spot) — <b>verify before trading</b>. Everything stays on your phone.
 </p>
 
 <script>
@@ -117,120 +134,28 @@ const CFG={nifty:{name:"Nifty 50",sym:"%5ENSEI",ph:24056},banknifty:{name:"Bank 
 const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
 const r6=x=>Math.round(x*1e6)/1e6;
 const fmt=x=>Number(x).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const cacheKey=k=>`sma35_prior5_${k}`; // 5 closes ending yesterday, for what-if
 
-/* ---------- data fetch (Yahoo via CORS proxy fallback) ---------- */
-const PROXIES=[u=>u,
-  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
-  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)];
-async function fetchSeries(sym){
-  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=1mo&interval=1d`;
-  let err;
-  for(const px of PROXIES){
-    try{
-      const res=await fetch(px(url),{cache:'no-store'});
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const j=await res.json();
-      const rr=j.chart&&j.chart.result&&j.chart.result[0];
-      if(!rr)throw new Error('no data');
-      const ts=rr.timestamp||[],cl=rr.indicators.quote[0].close||[],s=[];
-      for(let i=0;i<ts.length;i++) if(cl[i]!=null) s.push({d:ts[i],c:cl[i]});
-      if(s.length<6)throw new Error('not enough');
-      const meta=rr.meta||{};
-      return {series:s,live:meta.regularMarketPrice,liveTime:meta.regularMarketTime};
-    }catch(e){err=e;}
-  }
-  throw err||new Error('blocked');
-}
-
-/* analyse one index from a fetched series → stance + flip */
-function analyse(series,live){
-  const pts=series.slice(-6).map(o=>o.c);        // D-5..last
-  let cur=(typeof live==='number'&&isFinite(live))?live:pts[5];
-  pts[5]=+cur;                                   // override last with live price
-  const [d5,d4,d3,d2,d1,t]=pts;
-  const today3=mean([d2,d1,t]),today5=mean([d4,d3,d2,d1,t]);
-  const yest3 =mean([d3,d2,d1]),yest5 =mean([d5,d4,d3,d2,d1]);
-  const stanceToday = today3>=today5?'BUY':'SELL';
-  const stanceYest  = yest3 >=yest5 ?'BUY':'SELL';
-  return {price:+cur,stanceToday,changed:stanceToday!==stanceYest,
-          today3,today5,prior5:[d5,d4,d3,d2,d1]};
-}
-
-/* ---------- SHOW ME ---------- */
-$("show").onclick=async()=>{
-  const btn=$("show");btn.disabled=true;const orig=btn.textContent;
-  btn.innerHTML='<span class="spin"></span>Fetching…';
-  const keys=Object.keys(CFG);
-  const results=await Promise.allSettled(keys.map(k=>fetchSeries(CFG[k].sym)));
-  const sum=$("summary");sum.classList.remove("hidden");
-  let html="",flips=[],anyOk=false,stamp="";
-  results.forEach((res,i)=>{
-    const k=keys[i],name=CFG[k].name;
-    if(res.status==="fulfilled"){
-      anyOk=true;
-      const a=analyse(res.value.series,res.value.live);
-      localStorage.setItem(cacheKey(k),JSON.stringify(a.prior5));
-      const tcls=a.stanceToday==='BUY'?'buy':'sell';
-      const lt=res.value.liveTime?new Date(res.value.liveTime*1000):null;
-      stamp=lt?lt.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):stamp;
-      if(a.changed) flips.push({name,st:a.stanceToday});
-      html+=`<div class="ix"><div><div class="nm">${name}</div>
-        <div class="px">${fmt(a.price)}</div>
-        <div class="smas">3-SMA ${fmt(a.today3)} · 5-SMA ${fmt(a.today5)}</div></div>
-        <div class="tag ${tcls}">${a.stanceToday}</div></div>`;
-    }else{
-      html+=`<div class="ix"><div class="nm">${name}</div><div class="tag err">couldn’t fetch</div></div>`;
-    }
-  });
-  // change line
-  if(anyOk){
-    if(flips.length===0){
-      html+=`<div class="change none">No change in signal today</div>`;
-    }else{
-      const parts=flips.map(f=>`${f.name} flipped to <span class="${f.st==='BUY'?'b':'s'}">${f.st}</span> today`);
-      html+=`<div class="change flip">${parts.join(" · ")}</div>`;
-    }
-    html+=`<div class="stamp">As of ${stamp||new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}</div>`;
-  }else{
-    html=`<div class="change none">Couldn’t reach the data source on this network.<br>Open the What-if section and enter closes manually.</div>`;
-  }
-  sum.innerHTML=html;
-  btn.disabled=false;btn.textContent=orig;
-  if(typeof loadWhatIf==='function') loadWhatIf();
-};
-
-/* ---------- WHAT-IF (single index, hypothetical close) ---------- */
-let cur="nifty",closes=null;
-const grid=$("closeGrid");
-for(let i=0;i<5;i++){const c=document.createElement("div");c.className="cell";
-  c.innerHTML=`<label>${i===4?'D-1':'D-'+(5-i)}</label><input type="number" inputmode="decimal" id="c${i}">`;grid.appendChild(c);}
-function loadWhatIf(){
-  try{const a=JSON.parse(localStorage.getItem(cacheKey(cur)));closes=Array.isArray(a)&&a.length===5?a.map(Number):null;}catch(e){closes=null;}
-  for(let i=0;i<5;i++) $("c"+i).value=closes?closes[i]:"";
-  $("idxName").textContent=CFG[cur].name;$("today").placeholder="e.g. "+CFG[cur].ph;
-  refresh();
-}
-$("seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
-  [...$("seg").children].forEach(x=>x.classList.toggle("on",x===b));cur=b.dataset.k;$("today").value="";loadWhatIf();});
-$("saveCloses").onclick=()=>{const a=[];for(let i=0;i<5;i++){const v=parseFloat($("c"+i).value);if(isNaN(v)){alert("Fill all 5 closes.");return;}a.push(v);}
-  closes=a;localStorage.setItem(cacheKey(cur),JSON.stringify(a));refresh();};
-function compute(T){const yest3=mean(closes.slice(2)),yest5=mean(closes);
+/* ===== shared SMA logic ===== */
+function computeCross(closes,T){               // closes = 5 prior, T = today
+  const yest3=mean(closes.slice(2)),yest5=mean(closes);
   const today3=mean([closes[3],closes[4],T]),today5=mean([closes[1],closes[2],closes[3],closes[4],T]);
   const prev=r6(yest3-yest5),now=r6(today3-today5);let signal="FLAT";
   if(prev<=0&&now>0)signal="BUY";else if(prev>=0&&now<0)signal="SELL";
-  return{yest3,yest5,today3,today5,prev,now,signal};}
-function refresh(){
-  const ready=!!closes;$("needData").classList.toggle("hidden",ready);
-  const T=parseFloat($("today").value);
-  if(!ready||isNaN(T)){$("verdict").classList.add("hidden");$("chart").classList.add("hidden");return;}
-  const c=compute(T),v=$("verdict");v.classList.remove("hidden","buy","sell","flat");
-  if(c.signal==="BUY"){v.classList.add("buy");$("sig").textContent="BUY";$("sigsub").textContent="3-SMA crosses ABOVE 5-SMA";}
-  else if(c.signal==="SELL"){v.classList.add("sell");$("sig").textContent="SELL";$("sigsub").textContent="3-SMA crosses BELOW 5-SMA";}
-  else{v.classList.add("flat");$("sig").textContent="NO CROSS";$("sigsub").textContent=(c.now>=0?"3 stays above 5":"3 stays below 5")+" — hold";}
-  drawChart(c);
+  return{yest3,yest5,today3,today5,prev,now,signal};
 }
-function drawChart(c){
+function renderVerdict(c,el){                   // el={v,sig,sub}
+  el.v.classList.remove("hidden","buy","sell","flat");
+  if(c.signal==="BUY"){el.v.classList.add("buy");el.sig.textContent="BUY";el.sub.textContent="3-SMA crosses ABOVE 5-SMA";}
+  else if(c.signal==="SELL"){el.v.classList.add("sell");el.sig.textContent="SELL";el.sub.textContent="3-SMA crosses BELOW 5-SMA";}
+  else{el.v.classList.add("flat");el.sig.textContent="NO CROSS";el.sub.textContent=(c.now>=0?"3 stays above 5":"3 stays below 5")+" — hold";}
+}
+function renderRows(c,el){
+  el.innerHTML=
+    `<div class="row"><span class="k">Yest 3 / 5-SMA</span><span class="v"><span class="fast">${fmt(c.yest3)}</span> / <span class="slow">${fmt(c.yest5)}</span></span></div>`+
+    `<div class="row"><span class="k">Today 3 / 5-SMA</span><span class="v"><span class="fast">${fmt(c.today3)}</span> / <span class="slow">${fmt(c.today5)}</span></span></div>`+
+    `<div class="row"><span class="k">Gap yest → today</span><span class="v">${c.prev.toFixed(2)} → ${c.now.toFixed(2)}</span></div>`;
+}
+function drawChart(c,svg){
   const W=320,H=120,padX=34,padY=20,xs=[padX,W-padX];
   let lo=Math.min(c.yest3,c.yest5,c.today3,c.today5),hi=Math.max(c.yest3,c.yest5,c.today3,c.today5);
   if(hi-lo<1e-9){hi+=1;lo-=1;}const p=(hi-lo)*.25;lo-=p;hi+=p;
@@ -241,12 +166,100 @@ function drawChart(c){
     cm=`<circle cx="${cx}" cy="${cy}" r="5.5" fill="${c.now>0?'#16C784':'#F0616D'}" stroke="#0E1116" stroke-width="2"/>`;}
   const ln=(pt,col)=>`<polyline points="${pt.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linecap="round"/>`;
   const lbl=(x,t)=>`<text x="${x}" y="${H-5}" fill="#8A94A3" font-size="10" font-family="monospace" text-anchor="middle">${t}</text>`;
-  const ch=$("chart");ch.classList.remove("hidden");
-  ch.innerHTML=`<line x1="${xs[0]}" y1="${padY-6}" x2="${xs[0]}" y2="${H-padY+4}" stroke="#2A313C"/>
-    <line x1="${xs[1]}" y1="${padY-6}" x2="${xs[1]}" y2="${H-padY+4}" stroke="#2A313C"/>
-    ${ln(s,'#FBBF24')}${ln(f,'#38BDF8')}${cm}${lbl(xs[0],'YEST')}${lbl(xs[1],'TODAY')}`;
+  svg.classList.remove("hidden");
+  svg.innerHTML=`<line x1="${xs[0]}" y1="${padY-6}" x2="${xs[0]}" y2="${H-padY+4}" stroke="#2A313C"/><line x1="${xs[1]}" y1="${padY-6}" x2="${xs[1]}" y2="${H-padY+4}" stroke="#2A313C"/>${ln(s,'#FBBF24')}${ln(f,'#38BDF8')}${cm}${lbl(xs[0],'YEST')}${lbl(xs[1],'TODAY')}`;
 }
-$("today").addEventListener("input",refresh);
+
+/* ===== fetch (Yahoo spot via CORS proxy) ===== */
+const PROXIES=[u=>u,u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)];
+async function fetchSeries(sym){
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?range=1mo&interval=1d`;let err;
+  for(const px of PROXIES){try{
+    const res=await fetch(px(url),{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
+    const j=await res.json();const rr=j.chart&&j.chart.result&&j.chart.result[0];if(!rr)throw new Error('no data');
+    const ts=rr.timestamp||[],cl=rr.indicators.quote[0].close||[],s=[];
+    for(let i=0;i<ts.length;i++) if(cl[i]!=null) s.push({d:ts[i],c:cl[i]});
+    if(s.length<6)throw new Error('not enough');const meta=rr.meta||{};
+    return{series:s,live:meta.regularMarketPrice,liveTime:meta.regularMarketTime};
+  }catch(e){err=e;}}throw err||new Error('blocked');
+}
+function analyse(series,live){
+  const pts=series.slice(-6).map(o=>o.c);let cur=(typeof live==='number'&&isFinite(live))?live:pts[5];pts[5]=+cur;
+  const[d5,d4,d3,d2,d1,t]=pts;
+  const today3=mean([d2,d1,t]),today5=mean([d4,d3,d2,d1,t]),yest3=mean([d3,d2,d1]),yest5=mean([d5,d4,d3,d2,d1]);
+  const stanceToday=today3>=today5?'BUY':'SELL',stanceYest=yest3>=yest5?'BUY':'SELL';
+  return{price:+cur,stanceToday,changed:stanceToday!==stanceYest,today3,today5,prior5:[d5,d4,d3,d2,d1]};
+}
+$("show").onclick=async()=>{
+  const btn=$("show");btn.disabled=true;const orig=btn.textContent;btn.innerHTML='<span class="spin"></span>Fetching…';
+  const keys=Object.keys(CFG);const results=await Promise.allSettled(keys.map(k=>fetchSeries(CFG[k].sym)));
+  const sum=$("summary");sum.classList.remove("hidden");let html="",flips=[],anyOk=false,stamp="";
+  results.forEach((res,i)=>{const k=keys[i],name=CFG[k].name;
+    if(res.status==="fulfilled"){anyOk=true;const a=analyse(res.value.series,res.value.live);
+      localStorage.setItem(`sma35_prior5_${k}`,JSON.stringify(a.prior5));
+      const tcls=a.stanceToday==='BUY'?'buy':'sell';
+      const lt=res.value.liveTime?new Date(res.value.liveTime*1000):null;
+      stamp=lt?lt.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):stamp;
+      if(a.changed)flips.push({name,st:a.stanceToday});
+      html+=`<div class="ix"><div><div class="nm">${name}</div><div class="px">${fmt(a.price)}</div><div class="smas">3-SMA ${fmt(a.today3)} · 5-SMA ${fmt(a.today5)}</div></div><div class="tag ${tcls}">${a.stanceToday}</div></div>`;
+    }else{html+=`<div class="ix"><div class="nm">${name}</div><div class="tag err">couldn’t fetch</div></div>`;}});
+  if(anyOk){
+    html+= flips.length===0 ? `<div class="change none">No change in signal today</div>`
+      : `<div class="change flip">${flips.map(f=>`${f.name} flipped to <span class="${f.st==='BUY'?'b':'s'}">${f.st}</span> today`).join(" · ")}</div>`;
+    html+=`<div class="stamp">As of ${stamp||new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}</div>`;
+  }else{html=`<div class="change none">Couldn’t reach the data source on this network.</div>`;}
+  sum.innerHTML=html;btn.disabled=false;btn.textContent=orig;loadWhatIf();
+};
+
+/* ===== OPTION / CUSTOM ===== */
+const CK="sma35_custom_closes",CL="sma35_custom_label";
+const cGrid=$("cGrid");
+for(let i=0;i<5;i++){const d=document.createElement("div");d.className="cell";
+  d.innerHTML=`<label>${i===4?'C-1':'C-'+(5-i)}</label><input type="number" inputmode="decimal" id="x${i}">`;cGrid.appendChild(d);}
+function customCloses(){const a=[];for(let i=0;i<5;i++){const v=parseFloat($("x"+i).value);if(isNaN(v))return null;a.push(v);}return a;}
+function customRefresh(){
+  const closes=customCloses();
+  if(closes)localStorage.setItem(CK,JSON.stringify(closes));
+  localStorage.setItem(CL,$("cLabel").value||"");
+  const T=parseFloat($("cToday").value);
+  if(!closes||isNaN(T)){$("cVerdict").classList.add("hidden");$("cChart").classList.add("hidden");$("cRows").innerHTML="";return;}
+  const c=computeCross(closes,T);
+  renderVerdict(c,{v:$("cVerdict"),sig:$("cSig"),sub:$("cSub")});
+  renderRows(c,$("cRows"));drawChart(c,$("cChart"));
+}
+(function initCustom(){
+  try{const a=JSON.parse(localStorage.getItem(CK));if(Array.isArray(a)&&a.length===5)a.forEach((v,i)=>$("x"+i).value=v);}catch(e){}
+  $("cLabel").value=localStorage.getItem(CL)||"";
+  for(let i=0;i<5;i++)$("x"+i).addEventListener("input",customRefresh);
+  $("cToday").addEventListener("input",customRefresh);
+  $("cLabel").addEventListener("input",()=>localStorage.setItem(CL,$("cLabel").value||""));
+  $("cClear").onclick=()=>{for(let i=0;i<5;i++)$("x"+i).value="";$("cToday").value="";$("cLabel").value="";
+    localStorage.removeItem(CK);localStorage.removeItem(CL);customRefresh();};
+  customRefresh();
+})();
+
+/* ===== INDEX WHAT-IF ===== */
+let cur="nifty",closes=null;
+const grid=$("closeGrid");
+for(let i=0;i<5;i++){const c=document.createElement("div");c.className="cell";
+  c.innerHTML=`<label>${i===4?'D-1':'D-'+(5-i)}</label><input type="number" inputmode="decimal" id="c${i}">`;grid.appendChild(c);}
+function loadWhatIf(){
+  try{const a=JSON.parse(localStorage.getItem(`sma35_prior5_${cur}`));closes=Array.isArray(a)&&a.length===5?a.map(Number):null;}catch(e){closes=null;}
+  for(let i=0;i<5;i++)$("c"+i).value=closes?closes[i]:"";
+  $("idxName").textContent=CFG[cur].name;$("today").placeholder="e.g. "+CFG[cur].ph;wifRefresh();
+}
+$("seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  [...$("seg").children].forEach(x=>x.classList.toggle("on",x===b));cur=b.dataset.k;$("today").value="";loadWhatIf();});
+$("saveCloses").onclick=()=>{const a=[];for(let i=0;i<5;i++){const v=parseFloat($("c"+i).value);if(isNaN(v)){alert("Fill all 5 closes.");return;}a.push(v);}
+  closes=a;localStorage.setItem(`sma35_prior5_${cur}`,JSON.stringify(a));wifRefresh();};
+function wifRefresh(){
+  const ready=!!closes;$("needData").classList.toggle("hidden",ready);
+  const T=parseFloat($("today").value);
+  if(!ready||isNaN(T)){$("verdict").classList.add("hidden");$("chart").classList.add("hidden");return;}
+  const c=computeCross(closes,T);
+  renderVerdict(c,{v:$("verdict"),sig:$("sig"),sub:$("sigsub")});drawChart(c,$("chart"));
+}
+$("today").addEventListener("input",wifRefresh);
 loadWhatIf();
 </script>
 </body>
